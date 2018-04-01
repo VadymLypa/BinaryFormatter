@@ -1,0 +1,92 @@
+﻿<Window x:Class="MyTechnicalTask.Views.Window"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        Title="Binary formatter " Height="320" Width="500">
+    <Grid>
+
+        <Button
+            Content="Serialize" 
+            IsEnabled="{Binding IsSerializeButtonEnabled}"
+            Margin="369,61,41,202"
+            Command ="{Binding SerializeCommand}"/>
+
+
+        <TextBox 
+            HorizontalAlignment="Left" 
+            Height="23" 
+            IsReadOnly ="True"
+            Margin="31,64,0,0" 
+            TextWrapping="Wrap" 
+            Text="{Binding Path= SelectedInputFoldertxb}"
+            VerticalAlignment="Top" Width="236"/>
+
+        <Button 
+            Content="..." 
+            Command="{Binding SelectOutputFileCommand}"
+            HorizontalAlignment="Left" 
+            Margin="290,149,0,0" 
+            VerticalAlignment="Top"
+            Width="28" Height="19"/>
+
+        <TextBox 
+            HorizontalAlignment="Left" 
+            Height="23" 
+            IsReadOnly="True"
+            Margin="35,148,0,0" 
+            TextWrapping="Wrap" 
+            Text="{Binding Path= SelectedOutputFiletxb, 
+            Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            VerticalAlignment="Top" 
+            Width="236"/>
+
+
+        <Button 
+            Content="..."
+            Command="{Binding SelectOutputFolderCommand}"
+            HorizontalAlignment="Left" 
+            Margin="290,211,0,0" 
+            VerticalAlignment="Top"
+            Width="28"/>
+
+        <TextBox 
+            HorizontalAlignment="Left" 
+            Height="23"
+            IsReadOnly="True"
+            Margin="33,211,0,0" 
+            TextWrapping="Wrap"
+            Text="{Binding Path= SelectedOutputFoldertxb, 
+            Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            VerticalAlignment="Top" Width="236"/>
+
+
+        <Button 
+            Content="Deserialize"
+            IsEnabled="{Binding IsDeserializeButtonEnabled}"
+            Command="{Binding DeserializeCommand}"
+            HorizontalAlignment="Left" 
+            Margin="367,146,0,0" 
+            VerticalAlignment="Top" 
+            Width="98" Height="83"/>
+
+        <Label 
+            Content="Select the file (or folder) which you want to serialize"
+            HorizontalAlignment="Left" 
+            Margin="30,16,0,0" VerticalAlignment="Top" Height="32" Width="382" FontSize="14" FontFamily="Segoe Print"/>
+        <Label 
+            Content="Select the file to deserialize and than location" 
+            HorizontalAlignment="Left" 
+            VerticalAlignment="Top" 
+            Margin="33,104,0,0" FontFamily="Segoe Print" FontSize="14"/>
+        
+        <Button 
+            Content="..." 
+            Command="{Binding InputFolderCommand}"
+            HorizontalAlignment="Left" 
+            Margin="289,64,0,0" 
+            VerticalAlignment="Top" 
+            Width="29"/>
+
+    </Grid>
+</Window>
