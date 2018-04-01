@@ -32,6 +32,12 @@ namespace MyTechnicalTask.Services
                 MessageBoxImage.Error, MessageBoxResult.OK,
                 MessageBoxOptions.ServiceNotification);
         }
-        
+
+        public void ErrorFileNotExist()
+        {
+            MessageBox.Show("Sorry! You can't deserialize. File not exists!", "Error!", MessageBoxButton.OK,
+                MessageBoxImage.Error, MessageBoxResult.OK,
+                MessageBoxOptions.ServiceNotification);
+        }
     }
 }

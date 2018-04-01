@@ -12,6 +12,7 @@ namespace MyTechnicalTask
         protected override DependencyObject CreateShell()
         {
             Container.RegisterType<INotificationService, NotificationService>();
+            Container.RegisterType<IBinaryService, BinaryService>();
 
             return Container.Resolve<MainWindow>();
         }

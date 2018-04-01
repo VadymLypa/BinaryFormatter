@@ -6,5 +6,6 @@
         void ErrorSerialization();
         void SuccessfulDeserialization();
         void ErrorDerialization();
+        void ErrorFileNotExist();
     }
 }

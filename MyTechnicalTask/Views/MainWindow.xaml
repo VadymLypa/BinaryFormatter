@@ -12,41 +12,28 @@
             Margin="369,61,41,202"
             Command ="{Binding SerializeCommand}"/>
 
-
         <TextBox 
             HorizontalAlignment="Left" 
             Height="23" 
             IsReadOnly ="True"
             Margin="31,64,0,0" 
             TextWrapping="Wrap" 
-            Text="{Binding Path= SelectedInputFoldertxb}"
+            Text="{Binding Path= SerializeFolderPath}"
             VerticalAlignment="Top" Width="236"/>
 
         <Button 
             Content="..." 
-            Command="{Binding SelectOutputFileCommand}"
+            Command="{Binding SelectSerializeFolderPathCommand}"
             HorizontalAlignment="Left" 
-            Margin="290,149,0,0" 
-            VerticalAlignment="Top"
-            Width="28" Height="19"/>
-
-        <TextBox 
-            HorizontalAlignment="Left" 
-            Height="23" 
-            IsReadOnly="True"
-            Margin="35,148,0,0" 
-            TextWrapping="Wrap" 
-            Text="{Binding Path= SelectedOutputFiletxb, 
-            Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            Margin="289,64,0,0" 
             VerticalAlignment="Top" 
-            Width="236"/>
-
+            Width="29"/>
 
         <Button 
             Content="..."
-            Command="{Binding SelectOutputFolderCommand}"
+            Command="{Binding SelectDeserializeFolderPathCommand}"
             HorizontalAlignment="Left" 
-            Margin="290,211,0,0" 
+            Margin="290,170,0,0" 
             VerticalAlignment="Top"
             Width="28"/>
 
@@ -54,9 +41,9 @@
             HorizontalAlignment="Left" 
             Height="23"
             IsReadOnly="True"
-            Margin="33,211,0,0" 
+            Margin="33,170,0,0" 
             TextWrapping="Wrap"
-            Text="{Binding Path= SelectedOutputFoldertxb, 
+            Text="{Binding Path= DeserializeFolderPath, 
             Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             VerticalAlignment="Top" Width="236"/>
 
@@ -74,19 +61,14 @@
             Content="Select the file (or folder) which you want to serialize"
             HorizontalAlignment="Left" 
             Margin="30,16,0,0" VerticalAlignment="Top" Height="32" Width="382" FontSize="14" FontFamily="Segoe Print"/>
+        
         <Label 
             Content="Select the file to deserialize and than location" 
             HorizontalAlignment="Left" 
             VerticalAlignment="Top" 
             Margin="33,104,0,0" FontFamily="Segoe Print" FontSize="14"/>
-        
-        <Button 
-            Content="..." 
-            Command="{Binding InputFolderCommand}"
-            HorizontalAlignment="Left" 
-            Margin="289,64,0,0" 
-            VerticalAlignment="Top" 
-            Width="29"/>
+
+
 
     </Grid>
 </Window>

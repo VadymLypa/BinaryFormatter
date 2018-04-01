@@ -13,22 +13,30 @@ namespace MyTechnicalTask.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-
         #region fields
 
+        private FileData _binary;
+
         private readonly INotificationService _notificationService;
-        private string _selectedInputFoldertxb;
-        private string _selectedOutputFiletxb;
-        private string _selectedoutputFoldertxb;
+        private readonly IBinaryService _binaryService;
+
+        private string _serializeFolderPath;
+        private string _deserializeFolderPath;
+
         private bool _isSerializeButtonEnable;
         private bool _isDeserializeButtonEnable;
+
+        private string _binFilePath;
+
         #endregion
 
         #region Properties
 
-        public MainWindowViewModel(INotificationService notificationService)
+        public MainWindowViewModel(INotificationService notificationService, IBinaryService binaryService)
         {
             _notificationService = notificationService;
+            _binaryService = binaryService;
+
             IsSerializeButtonEnabled = false;
             IsDeserializeButtonEnabled = false;
         }
@@ -43,37 +51,30 @@ namespace MyTechnicalTask.ViewModels
         {
             get { return _isSerializeButtonEnable; }
             set { SetProperty(ref _isSerializeButtonEnable, value); }
-        }
+        }   
 
-        public string SelectedInputFoldertxb
-        {
-            get { return _selectedInputFoldertxb; }
-            set { SetProperty(ref _selectedInputFoldertxb, value); }
-        }
 
-        public string SelectedOutputFiletxb
+        public string SerializeFolderPath
         {
-            get { return _selectedOutputFiletxb; }
-            set { SetProperty(ref _selectedOutputFiletxb, value); }
+            get { return _serializeFolderPath; }
+            set { SetProperty(ref _serializeFolderPath, value); }
         }
-
-        public string SelectedOutputFoldertxb
+       
+        public string DeserializeFolderPath
         {
-            get { return _selectedoutputFoldertxb; }
-            set { SetProperty(ref _selectedoutputFoldertxb, value); }
+            get { return _deserializeFolderPath; }
+            set { SetProperty(ref _deserializeFolderPath, value); }
         }
 
         #endregion
 
         #region Commands
 
-        public ICommand InputFolderCommand => new DelegateCommand(OnInputFoler);
+        public ICommand SelectSerializeFolderPathCommand => new DelegateCommand(OnSelectedSerializeFolder);
 
         public ICommand SerializeCommand => new DelegateCommand(OnSerialize);
-
-        public ICommand SelectOutputFileCommand => new DelegateCommand(OnOutputFile);
-
-        public ICommand SelectOutputFolderCommand => new DelegateCommand(OnOutputFolder);
+        
+        public ICommand SelectDeserializeFolderPathCommand => new DelegateCommand(OnSelectedDeserializeFolder);
 
         public ICommand DeserializeCommand => new DelegateCommand(OnDeserialize);
 
@@ -81,24 +82,23 @@ namespace MyTechnicalTask.ViewModels
 
         #region Methods
 
-        private void OnInputFoler()
+        private void OnSelectedSerializeFolder()
         {
-            FolderBrowserDialog browserDialog = new FolderBrowserDialog();
+            var browserDialog = new FolderBrowserDialog();
             browserDialog.ShowNewFolderButton = false;
 
-            DialogResult dialogResult = browserDialog.ShowDialog();
+            var dialogResult = browserDialog.ShowDialog();
 
             if (!string.IsNullOrWhiteSpace(browserDialog.SelectedPath))
             {
-                SelectedInputFoldertxb = browserDialog.SelectedPath;
+                SerializeFolderPath = browserDialog.SelectedPath;
                 IsSerializeButtonEnabled = true;
-            }
-            
+            }            
         }
 
         private void OnSerialize()
         {
-            string inputPath = SelectedInputFoldertxb;
+            string inputPath = SerializeFolderPath;
             string outputPath = "SerializeFile.bin";
 
             string[] folders = Directory.GetDirectories(inputPath, "*", SearchOption.AllDirectories)
@@ -107,66 +107,58 @@ namespace MyTechnicalTask.ViewModels
             string[] files = Directory.GetFiles(inputPath, "*", SearchOption.AllDirectories).Select(Path.GetFullPath)
                 .ToArray();
 
-            var folder = new BinaryManager(folders, files);
+
+            _binary = new Models.FileData(folders, files);
             var formatter = new BinaryFormatter();
 
             using (var fs = new FileStream(outputPath, FileMode.OpenOrCreate))
             {
                 try
                 {
-                    formatter.Serialize(fs, folder);
+                    formatter.Serialize(fs, _binary);
                     _notificationService.SuccessfulSerialization();
                 }
                 catch (Exception e)
                 {
                     _notificationService.ErrorSerialization();
                 }
+
+                _binFilePath = fs.Name;
             }
 
         }
-
-        private void OnOutputFile()
+        
+        private void OnSelectedDeserializeFolder()
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.Filter = "(*.bin)|*.bin";
-
-            DialogResult dialogResult = fileDialog.ShowDialog();
-
-            if (!string.IsNullOrWhiteSpace(fileDialog.FileName))
-                SelectedOutputFiletxb = fileDialog.FileName;
-             
-
-        }
-
-        private void OnOutputFolder()
-        {
-            FolderBrowserDialog browserDialog = new FolderBrowserDialog();
-            DialogResult result = browserDialog.ShowDialog();
+            var browserDialog = new FolderBrowserDialog();
+            var result = browserDialog.ShowDialog();
 
             if (!string.IsNullOrWhiteSpace(browserDialog.SelectedPath))
             {
-                SelectedOutputFoldertxb = browserDialog.SelectedPath;
+                DeserializeFolderPath = browserDialog.SelectedPath;
                 IsDeserializeButtonEnabled = true;
             }
-
         }
 
         private void OnDeserialize()
         {
-            var formatter = new BinaryFormatter();
+            if (!File.Exists(_binFilePath))
+            {
+                _notificationService.ErrorFileNotExist();
+            }
 
-            using (var fs = File.Open(SelectedOutputFiletxb, FileMode.Open))
+            var formatter = new BinaryFormatter();
+            using (var fs = File.Open(_binFilePath, FileMode.Open))
             {
                 try
                 {
-                    BinaryManager binaryManager = (BinaryManager)formatter.Deserialize(fs);
-                    binaryManager.Unpack(SelectedOutputFoldertxb);
-
+                    Models.FileData binaryDeserialize = (Models.FileData)formatter.Deserialize(fs);
+                    _binaryService.Unpack(DeserializeFolderPath,_binary);
+                  
                     _notificationService.SuccessfulSerialization();
 
-                    SelectedInputFoldertxb = string.Empty;
-                    SelectedOutputFiletxb = string.Empty;
-                    SelectedOutputFoldertxb = string.Empty;
+                    SerializeFolderPath = string.Empty;
+                    DeserializeFolderPath = string.Empty;
 
                 }
                 catch (Exception e)
@@ -174,8 +166,6 @@ namespace MyTechnicalTask.ViewModels
                     _notificationService.ErrorDerialization();
                 }
             }
-
-           
         }
 
         #endregion
