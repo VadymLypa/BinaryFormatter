@@ -6,10 +6,10 @@ namespace MyTechnicalTask.Models
     [Serializable]
     public class FileData
     {
-        public IEnumerable<string> Folders;
-        public IEnumerable<string> Files;
+        public List<string> Folders;
+        public List<string> Files;
 
-        public FileData(IEnumerable<string> folders, IEnumerable<string> files)
+        public FileData(List<string> folders, List<string> files)
         {
             Folders = folders;
             Files = files;

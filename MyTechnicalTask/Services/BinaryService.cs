@@ -7,7 +7,7 @@ namespace MyTechnicalTask.Services
 {
     public class BinaryService : IBinaryService
     {   
-        public void Unpack(string dirPath, Models.FileData binary)
+        public void Unpack(string dirPath, FileData binary)
         {
             if (dirPath != null)
             {

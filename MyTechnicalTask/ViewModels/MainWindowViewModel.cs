@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Input;
 using Prism.Commands;
@@ -14,6 +14,9 @@ namespace MyTechnicalTask.ViewModels
     public class MainWindowViewModel : BindableBase
     {
         #region fields
+
+        private readonly List<string> _listOfFolder;
+        private readonly List<string> _listOfFiles;
 
         private FileData _binary;
 
@@ -36,6 +39,9 @@ namespace MyTechnicalTask.ViewModels
         {
             _notificationService = notificationService;
             _binaryService = binaryService;
+
+            _listOfFolder = new List<string>();
+            _listOfFiles = new List<string>();
 
             IsSerializeButtonEnabled = false;
             IsDeserializeButtonEnabled = false;
@@ -86,8 +92,7 @@ namespace MyTechnicalTask.ViewModels
         {
             var browserDialog = new FolderBrowserDialog();
             browserDialog.ShowNewFolderButton = false;
-
-            var dialogResult = browserDialog.ShowDialog();
+            browserDialog.ShowDialog();
 
             if (!string.IsNullOrWhiteSpace(browserDialog.SelectedPath))
             {
@@ -95,43 +100,64 @@ namespace MyTechnicalTask.ViewModels
                 IsSerializeButtonEnabled = true;
             }            
         }
-
+        
         private void OnSerialize()
         {
-            string inputPath = SerializeFolderPath;
-            string outputPath = "SerializeFile.bin";
-
-            string[] folders = Directory.GetDirectories(inputPath, "*", SearchOption.AllDirectories)
-                .Select(Path.GetFullPath).ToArray();
-
-            string[] files = Directory.GetFiles(inputPath, "*", SearchOption.AllDirectories).Select(Path.GetFullPath)
-                .ToArray();
-
-
-            _binary = new Models.FileData(folders, files);
+             WalkDirectoryTree(SerializeFolderPath);
+            _binary = new FileData(_listOfFolder, _listOfFiles);
+            
             var formatter = new BinaryFormatter();
-
-            using (var fs = new FileStream(outputPath, FileMode.OpenOrCreate))
+            using (var fs = new FileStream("SerializeFile.bin", FileMode.OpenOrCreate))
             {
                 try
                 {
                     formatter.Serialize(fs, _binary);
-                    _notificationService.SuccessfulSerialization();
+                     _notificationService.SuccessfulSerialization();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    _notificationService.ErrorSerialization();
+                    _notificationService.ErrorSerialization(ex.Message);
+                }
+                _binFilePath = fs.Name;
+            }
+        }
+
+        public void WalkDirectoryTree(string dir)
+        {
+            if (!Directory.Exists(dir))
+            {
+                _notificationService.DirNotFoundException();
+                return;
+            }
+
+            foreach (string file in Directory.GetFiles(dir))
+                    _listOfFiles.Add(file);
+
+            foreach (string folder in Directory.GetDirectories(dir))
+            {
+                _listOfFolder.Add(folder);
+                try
+                {
+                    WalkDirectoryTree(folder);
                 }
 
-                _binFilePath = fs.Name;
+                catch (UnauthorizedAccessException ex)
+                {
+                    _notificationService.UnauthorizedAccessException(ex.Message);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    _notificationService.OthersExceptions(ex.Message);
+                }
             }
 
         }
-        
+
         private void OnSelectedDeserializeFolder()
         {
             var browserDialog = new FolderBrowserDialog();
-            var result = browserDialog.ShowDialog();
+            browserDialog.ShowDialog();
 
             if (!string.IsNullOrWhiteSpace(browserDialog.SelectedPath))
             {
@@ -145,6 +171,8 @@ namespace MyTechnicalTask.ViewModels
             if (!File.Exists(_binFilePath))
             {
                 _notificationService.ErrorFileNotExist();
+                DeserializeFolderPath = string.Empty;
+                return;
             }
 
             var formatter = new BinaryFormatter();
@@ -152,20 +180,28 @@ namespace MyTechnicalTask.ViewModels
             {
                 try
                 {
-                    Models.FileData binaryDeserialize = (Models.FileData)formatter.Deserialize(fs);
-                    _binaryService.Unpack(DeserializeFolderPath,_binary);
-                  
-                    _notificationService.SuccessfulSerialization();
+                    var binaryDeserialize = (FileData)formatter.Deserialize(fs);
 
-                    SerializeFolderPath = string.Empty;
-                    DeserializeFolderPath = string.Empty;
+                    _binaryService.Unpack(DeserializeFolderPath, _binary);
 
+                    _notificationService.SuccessfulDeserialization();
+                    ResetData();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    _notificationService.ErrorDerialization();
+                    _notificationService.ErrorDerialization(ex.Message);
+                    ResetData();
                 }
             }
+        }
+
+        private void ResetData()
+        {
+            SerializeFolderPath = string.Empty;
+            DeserializeFolderPath = string.Empty;
+
+            IsSerializeButtonEnabled = false;
+            IsDeserializeButtonEnabled = false;
         }
 
         #endregion

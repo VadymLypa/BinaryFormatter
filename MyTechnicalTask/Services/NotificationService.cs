@@ -12,9 +12,30 @@ namespace MyTechnicalTask.Services
                 MessageBoxOptions.ServiceNotification);
         }
 
-        public void ErrorSerialization()
+        public void DirNotFoundException()
         {
-            MessageBox.Show("Sorry! You can't serialize", "Error!", MessageBoxButton.OK,
+            MessageBox.Show("Directory not found", "Error!", MessageBoxButton.OK,
+                MessageBoxImage.Error, MessageBoxResult.OK,
+                MessageBoxOptions.ServiceNotification);
+        }
+
+        public void OthersExceptions(string mes)
+        {
+            MessageBox.Show(mes, "Error!", MessageBoxButton.OK,
+                MessageBoxImage.Error, MessageBoxResult.OK,
+                MessageBoxOptions.ServiceNotification);
+        }
+
+        public void ErrorSerialization(string mes)    
+        {
+            MessageBox.Show(mes, "Error!", MessageBoxButton.OK,
+                MessageBoxImage.Error, MessageBoxResult.OK,
+                MessageBoxOptions.ServiceNotification);
+        }
+
+        public void UnauthorizedAccessException(string mes)
+        {
+            MessageBox.Show(mes,"Error!",MessageBoxButton.OK,
                 MessageBoxImage.Error, MessageBoxResult.OK,
                 MessageBoxOptions.ServiceNotification);
         }
@@ -26,9 +47,9 @@ namespace MyTechnicalTask.Services
                 MessageBoxOptions.ServiceNotification);
         }
 
-        public void ErrorDerialization()
+        public void ErrorDerialization(string mes)
         {
-            MessageBox.Show("Sorry! You can't deserialize. Please input location or file to deserialize", "Error!", MessageBoxButton.OK,
+            MessageBox.Show("Some data deserialize, but " + mes, "Error!", MessageBoxButton.OK,
                 MessageBoxImage.Error, MessageBoxResult.OK,
                 MessageBoxOptions.ServiceNotification);
         }
