@@ -31,7 +31,7 @@ namespace Services
 
         public void DirNotFoundException() => ShowErrorMessageBox(DirNotFoundMessage);
 
-        public void ErrorSerialization(string message) => ShowErrorMessageBox(message);
+        public void ErrorSerialization(string message) => ShowErrorMessageBox($"Some data serialize but, + {message}");
 
         public void ErrorDeSerialization(string message) => ShowErrorMessageBox(message);
 

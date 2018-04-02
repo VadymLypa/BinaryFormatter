@@ -181,6 +181,7 @@ namespace MyTechnicalTask.ViewModels
                 return;
             }
 
+            IsDeserializeButtonEnabled = false;
             await Task.Run(() =>
             {
                 var formatter = new BinaryFormatter();
