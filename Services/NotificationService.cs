@@ -23,7 +23,7 @@ namespace Services
         
         public static void ShowErrorMessageBox(string message)
         {
-            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
+            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Information,
                 MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
         }
 
@@ -31,9 +31,9 @@ namespace Services
 
         public void DirNotFoundException() => ShowErrorMessageBox(DirNotFoundMessage);
 
-        public void ErrorSerialization(string message) => ShowErrorMessageBox($"Some data serialize but, + {message}");
+        public void ErrorSerialization(string message) => ShowErrorMessageBox($"Some data serialize but, {message}");
 
-        public void ErrorDeSerialization(string message) => ShowErrorMessageBox(message);
+        public void ErrorDeSerialization(string message) => ShowErrorMessageBox($"Some data serialize but, {message}");
 
         public void SuccessfulDeserialization() => ShowSuccessulMessageBox(SuccessfulDeserializationMessage);
 
