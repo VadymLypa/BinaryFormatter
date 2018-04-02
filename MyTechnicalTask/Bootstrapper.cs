@@ -1,9 +1,9 @@
 ﻿using System.Windows;
-using MyTechnicalTask.Abstractions;
-using MyTechnicalTask.Services;
+using Extensibility;
 using Microsoft.Practices.Unity;
 using MyTechnicalTask.Views;
 using Prism.Unity;
+using Services;
 
 namespace MyTechnicalTask
 {

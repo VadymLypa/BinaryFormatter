@@ -19,14 +19,14 @@
             Height="32" Width="382" 
             FontSize="14" FontFamily="Segoe Print" 
             Grid.ColumnSpan="3">
-             Select folder which you want to serialize
+            Select folder which you want to serialize
         </Label>
 
         <Button
             Grid.ColumnSpan="2" Grid.Column="1"
             Margin="56,53,13,131" 
             Content="Serialize" 
-            FontWeight="Bold" 
+            FontWeight="Bold"             
             IsEnabled="{Binding IsSerializeButtonEnabled}"
             Command ="{Binding SerializeCommand}"/>
 
@@ -71,16 +71,16 @@
             Command="{Binding DeserializeCommand}"
             FontWeight="Bold" 
             HorizontalAlignment="Left" 
-            Margin="56,140,0,0" 
+            Margin="56,143,0,0" 
             VerticalAlignment="Top" 
-            Width="126" Height="38" Grid.ColumnSpan="2" Grid.Column="1"/>
+            Width="126" Height="35" Grid.ColumnSpan="2" Grid.Column="1"/>
 
         <Label 
             HorizontalAlignment="Left" 
             VerticalAlignment="Top" 
             Margin="28,97,0,0" FontFamily="Segoe Print" FontSize="14" Grid.ColumnSpan="2">
-            Select the location deserialize 
-            </Label>
+            Select the location to deserialize
+        </Label>
 
 
 

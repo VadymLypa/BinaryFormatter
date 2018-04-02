@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Prism.Commands;
 using Prism.Mvvm;
 using System.Windows.Forms;
-using MyTechnicalTask.Abstractions;
-using MyTechnicalTask.Models;
+using Common;
+using Common.Models;
+using Extensibility;
 
 namespace MyTechnicalTask.ViewModels
 {
@@ -100,29 +102,33 @@ namespace MyTechnicalTask.ViewModels
                 IsSerializeButtonEnabled = true;
             }            
         }
-        
-        private void OnSerialize()
+
+        private async void OnSerialize()
         {
-             WalkDirectoryTree(SerializeFolderPath);
+            WalkDirectoryTree(SerializeFolderPath);
             _binary = new FileData(_listOfFolder, _listOfFiles);
-            
-            var formatter = new BinaryFormatter();
-            using (var fs = new FileStream("SerializeFile.bin", FileMode.OpenOrCreate))
+
+            await Task.Run(() =>
             {
-                try
+                var formatter = new BinaryFormatter();
+                using (var fs = new FileStream("SerializeFile.bin", FileMode.OpenOrCreate))
                 {
-                    formatter.Serialize(fs, _binary);
-                     _notificationService.SuccessfulSerialization();
+                    try
+                    {
+                        formatter.Serialize(fs, _binary);
+                        _notificationService.SuccessfulSerialization();
+                    }
+                    catch (Exception ex)
+                    {
+                        _notificationService.ErrorSerialization(ex.Message);
+                    }
+
+                    _binFilePath = fs.Name;
                 }
-                catch (Exception ex)
-                {
-                    _notificationService.ErrorSerialization(ex.Message);
-                }
-                _binFilePath = fs.Name;
-            }
+            });
         }
 
-        public void WalkDirectoryTree(string dir)
+        private void WalkDirectoryTree(string dir)
         {
             if (!Directory.Exists(dir))
             {
@@ -143,12 +149,12 @@ namespace MyTechnicalTask.ViewModels
 
                 catch (UnauthorizedAccessException ex)
                 {
-                    _notificationService.UnauthorizedAccessException(ex.Message);
+                    _notificationService.ErrorSerialization(ex.Message);
                     return;
                 }
                 catch (Exception ex)
                 {
-                    _notificationService.OthersExceptions(ex.Message);
+                    _notificationService.ErrorSerialization(ex.Message);
                 }
             }
 
@@ -166,33 +172,36 @@ namespace MyTechnicalTask.ViewModels
             }
         }
 
-        private void OnDeserialize()
+        private async void OnDeserialize()
         {
             if (!File.Exists(_binFilePath))
             {
-                _notificationService.ErrorFileNotExist();
+                _notificationService.DirNotFoundException();
                 DeserializeFolderPath = string.Empty;
                 return;
             }
 
-            var formatter = new BinaryFormatter();
-            using (var fs = File.Open(_binFilePath, FileMode.Open))
+            await Task.Run(() =>
             {
-                try
+                var formatter = new BinaryFormatter();
+                using (var fs = File.Open(_binFilePath, FileMode.Open))
                 {
-                    var binaryDeserialize = (FileData)formatter.Deserialize(fs);
+                    try
+                    {
+                        var binaryDeserialize = (FileData) formatter.Deserialize(fs);
 
-                    _binaryService.Unpack(DeserializeFolderPath, _binary);
+                        _binaryService.Unpack(DeserializeFolderPath, _binary);
 
-                    _notificationService.SuccessfulDeserialization();
-                    ResetData();
+                        _notificationService.SuccessfulDeserialization();
+                        ResetData();
+                    }
+                    catch (Exception ex)
+                    {
+                        _notificationService.ErrorDeSerialization(ex.Message);
+                        ResetData();
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _notificationService.ErrorDerialization(ex.Message);
-                    ResetData();
-                }
-            }
+            });
         }
 
         private void ResetData()
@@ -205,6 +214,5 @@ namespace MyTechnicalTask.ViewModels
         }
 
         #endregion
-
     }
 }
