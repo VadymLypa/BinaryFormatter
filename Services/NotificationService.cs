@@ -23,7 +23,7 @@ namespace Services
         
         public static void ShowErrorMessageBox(string message)
         {
-            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Information,
+            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error,
                 MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
         }
 
@@ -33,7 +33,7 @@ namespace Services
 
         public void ErrorSerialization(string message) => ShowErrorMessageBox($"Some data serialize but, {message}");
 
-        public void ErrorDeSerialization(string message) => ShowErrorMessageBox($"Some data serialize but, {message}");
+        public void ErrorDeSerialization(string message) => ShowErrorMessageBox(message);
 
         public void SuccessfulDeserialization() => ShowSuccessulMessageBox(SuccessfulDeserializationMessage);
 

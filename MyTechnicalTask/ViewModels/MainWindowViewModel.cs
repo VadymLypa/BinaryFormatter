@@ -196,13 +196,12 @@ namespace MyTechnicalTask.ViewModels
                         _binaryService.Unpack(DeserializeFolderPath, _binary);
 
                         _notificationService.SuccessfulDeserialization();
-                        ResetData();
                     }
                     catch (Exception ex)
                     {
                         _notificationService.ErrorDeSerialization(ex.Message);
-                        ResetData();
                     }
+                    ResetData();
                 }
             });
         }
@@ -211,6 +210,9 @@ namespace MyTechnicalTask.ViewModels
         {
             SerializeFolderPath = string.Empty;
             DeserializeFolderPath = string.Empty;
+            
+            _listOfFiles.Clear();
+            _listOfFolder.Clear();
 
             IsSerializeButtonEnabled = false;
             IsDeserializeButtonEnabled = false;
